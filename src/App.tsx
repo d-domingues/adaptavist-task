@@ -62,7 +62,7 @@ function App() {
             <td>
               Word
               <button className="SortBtn" onClick={() => onSortBy('word')}>
-                {sortBy.word ? sortBy.word === 'asc' ? <span>&uarr;</span> : <span>&darr;</span> : <span>&minus;</span>}
+                {sortBy.word ? sortBy.word === 'asc' ? <span>&darr;</span> : <span>&uarr;</span> : <span>&minus;</span>}
               </button>
             </td>
             <td>
@@ -70,9 +70,9 @@ function App() {
               <button className="SortBtn" onClick={() => onSortBy('count')}>
                 {sortBy.count ? (
                   sortBy.count === 'asc' ? (
-                    <span>&uarr;</span>
-                  ) : (
                     <span>&darr;</span>
+                  ) : (
+                    <span>&uarr;</span>
                   )
                 ) : (
                   <span>&minus;</span>
