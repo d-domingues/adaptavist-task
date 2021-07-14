@@ -1,25 +1,94 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import { useRef, useState } from 'react';
+
+interface WordCount {
+  word: String;
+  count: number;
+}
+
+type SortOrder = 'asc' | 'desc' | undefined;
+
+interface SortBy {
+  word?: SortOrder;
+  count?: SortOrder;
+}
+
 function App() {
+  const [wordCount, setWordCount] = useState<WordCount[]>([]);
+  const [sortBy, setSortBy] = useState<SortBy>({});
+
+  const inputField = useRef<HTMLInputElement>(null);
+
+  const countWords = () => {
+    if (inputField.current) {
+      const pattern = /\w+/g;
+      const matchedWords = inputField.current.value.match(pattern) || [];
+
+      const counts: WordCount[] = matchedWords.reduce((acc: WordCount[], word: string) => {
+        let found = acc.find((wc) => wc.word === word);
+
+        if (!!found) {
+          found.count += 1;
+        } else {
+          acc.push({ word, count: 1 });
+        }
+
+        return acc;
+      }, []);
+
+      setWordCount(counts);
+      setSortBy({});
+    }
+  };
+
+  const onSortBy = (by: keyof WordCount) => {
+    setSortBy({ [by]: sortBy[by] === 'asc' ? 'desc' : 'asc' });
+
+    setWordCount(
+      wordCount.sort((a, b) => {
+        return sortBy[by] === 'asc' ? (a[by] < b[by] ? 1 : -1) : a[by] > b[by] ? 1 : -1;
+      })
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <input ref={inputField} />
+      <button onClick={countWords}>COUNT</button>
+      <table>
+        <tbody>
+          <tr className="Header">
+            <td>
+              Word
+              <button className="SortBtn" onClick={() => onSortBy('word')}>
+                {sortBy.word ? sortBy.word === 'asc' ? <span>&uarr;</span> : <span>&darr;</span> : <span>&minus;</span>}
+              </button>
+            </td>
+            <td>
+              Count
+              <button className="SortBtn" onClick={() => onSortBy('count')}>
+                {sortBy.count ? (
+                  sortBy.count === 'asc' ? (
+                    <span>&uarr;</span>
+                  ) : (
+                    <span>&darr;</span>
+                  )
+                ) : (
+                  <span>&minus;</span>
+                )}
+              </button>
+            </td>
+          </tr>
+          {wordCount.map((wc) => (
+            <tr>
+              <td>{wc.word}</td>
+              <td>{wc.count}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 
