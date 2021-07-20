@@ -43,12 +43,10 @@ function App() {
   };
 
   const onSortBy = (by: keyof WordCount) => {
-    setSortBy({ [by]: sortBy[by] === 'asc' ? 'desc' : 'asc' });
+    setSortBy((prev) => ({ [by]: prev[by] === 'asc' ? 'desc' : 'asc' }));
 
-    setWordCount(
-      wordCount.sort((a, b) => {
-        return sortBy[by] === 'asc' ? (a[by] < b[by] ? 1 : -1) : a[by] > b[by] ? 1 : -1;
-      })
+    setWordCount((prev) =>
+      prev.sort((a, b) => (sortBy[by] === 'asc' ? (a[by] < b[by] ? 1 : -1) : a[by] > b[by] ? 1 : -1))
     );
   };
 
